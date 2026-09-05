@@ -117,3 +117,40 @@ button:hover {
     padding: 6px 12px;
     font-size: 13px;
 }
+
+.scenes-section {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.scenes-section h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #777;
+}
+
+.scenes-list p {
+    margin: 4px 0;
+    padding: 6px 10px;
+    background: #faf5ee;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.scene-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-direction: row;
+}
+
+.scene-form input {
+    flex: 1;
+}
+
+.scene-form button {
+    margin-top: 0;
+    padding: 6px 12px;
+    font-size: 13px;
+}

@@ -116,8 +116,90 @@ function renderStories(stories) {
         });
 
         card.appendChild(uploadForm);
+
+        // Секция сцен: список существующих + форма добавления новой
+        const scenesSection = document.createElement('div');
+        scenesSection.className = 'scenes-section';
+
+        const scenesHeading = document.createElement('h4');
+        scenesHeading.textContent = 'Сцены';
+
+        const scenesListDiv = document.createElement('div');
+        scenesListDiv.className = 'scenes-list';
+        scenesListDiv.textContent = 'Загружаем сцены...';
+
+        const sceneForm = document.createElement('form');
+        sceneForm.className = 'scene-form';
+
+        const sceneInput = document.createElement('input');
+        sceneInput.type = 'text';
+        sceneInput.placeholder = 'Текст сцены';
+        sceneInput.required = true;
+
+        const sceneButton = document.createElement('button');
+        sceneButton.type = 'submit';
+        sceneButton.textContent = 'Добавить сцену';
+
+        sceneForm.appendChild(sceneInput);
+        sceneForm.appendChild(sceneButton);
+
+        sceneForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const text = sceneInput.value;
+
+            try {
+                const response = await fetch(`/api/stories/${story.id}/scenes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Сервер ответил с ошибкой: ${response.status}`);
+                }
+
+                sceneForm.reset();
+                await loadScenesForStory(story.id, scenesListDiv);
+            } catch (error) {
+                alert(`Не удалось добавить сцену: ${error.message}`);
+            }
+        });
+
+        scenesSection.appendChild(scenesHeading);
+        scenesSection.appendChild(scenesListDiv);
+        scenesSection.appendChild(sceneForm);
+        card.appendChild(scenesSection);
+
         storiesList.appendChild(card);
+
+        // Сцены грузим отдельным запросом сразу после отрисовки карточки
+        loadScenesForStory(story.id, scenesListDiv);
     });
+}
+
+async function loadScenesForStory(storyId, container) {
+    try {
+        const response = await fetch(`/api/stories/${storyId}/scenes`);
+        if (!response.ok) {
+            throw new Error(`Сервер ответил с ошибкой: ${response.status}`);
+        }
+        const scenes = await response.json();
+
+        container.innerHTML = '';
+
+        if (scenes.length === 0) {
+            container.textContent = 'Пока нет сцен.';
+            return;
+        }
+
+        scenes.forEach(scene => {
+            const p = document.createElement('p');
+            p.textContent = `${scene.orderIndex + 1}. ${scene.text}`;
+            container.appendChild(p);
+        });
+    } catch (error) {
+        container.textContent = `❌ Не удалось загрузить сцены: ${error.message}`;
+    }
 }
 
 storyForm.addEventListener('submit', async (event) => {
