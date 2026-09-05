@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yumi Stories</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<main class="container">
+    <h1>🐕 Yumi Stories</h1>
+    <p>Истории о собаке Юми.</p>
+
+    <div id="status-box" class="status-box">
+        Проверяем связь с сервером...
+    </div>
+
+    <section class="form-section">
+        <h2>Новая история</h2>
+        <form id="story-form">
+            <label for="title">Заголовок</label>
+            <input type="text" id="title" name="title" required placeholder="Юми и большая лужа">
+
+            <label for="idea">Идея истории</label>
+            <textarea id="idea" name="idea" rows="4" required
+                      placeholder="Юми нашла на прогулке огромную лужу и решила, что это океан..."></textarea>
+
+            <button type="submit">Создать историю</button>
+        </form>
+    </section>
+
+    <section class="stories-section">
+        <h2>Истории</h2>
+        <div id="stories-list">Загружаем...</div>
+    </section>
+</main>
+
+<script src="js/app.js"></script>
+</body>
+</html>
