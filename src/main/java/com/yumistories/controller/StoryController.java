@@ -1,49 +1,57 @@
 package com.yumistories.controller;
 
 import com.yumistories.model.Story;
-import com.yumistories.repository.StoryRepository;
+import com.yumistories.service.StoryService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-/**
- * Пока без отдельного service-слоя: логика тривиальна (просто сохранить
- * и просто вернуть список), поэтому контроллер работает с репозиторием
- * напрямую. Когда появится реальная логика (например, генерация сцен),
- * вынесем её в StoryService — не раньше, чем она появится.
- */
 @RestController
 @RequestMapping("/api/stories")
 public class StoryController {
 
-    private final StoryRepository storyRepository;
+    private final StoryService storyService;
 
-    // Spring сам создаст StoryRepository и подставит его сюда —
-    // это называется "внедрение зависимостей через конструктор".
-    public StoryController(StoryRepository storyRepository) {
-        this.storyRepository = storyRepository;
+    public StoryController(StoryService storyService) {
+        this.storyService = storyService;
     }
 
     @GetMapping
     public List<Story> getAllStories() {
-        return storyRepository.findAll();
+        return storyService.getAllStories();
     }
 
     @PostMapping
     public Story createStory(@RequestBody CreateStoryRequest request) {
-        Story story = new Story(request.title(), request.idea());
-        return storyRepository.save(story);
+        return storyService.createStory(request.title(), request.idea());
     }
 
-    /**
-     * Отдельный класс для входящего JSON, а не сама сущность Story.
-     * Так фронт не может случайно прислать "id" и переопределить его —
-     * id всегда генерируется базой данных.
-     */
+    // "consumes = multipart/form-data" — этот эндпоинт принимает не JSON,
+    // а файл, отправленный через FormData на фронте.
+    @PostMapping(value = "/{id}/photos", consumes = "multipart/form-data")
+    public ResponseEntity<Story> addPhoto(@PathVariable Long id,
+                                          @RequestParam("file") MultipartFile file) {
+        try {
+            Story updated = storyService.addPhoto(id, file);
+            return ResponseEntity.ok(updated);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     public record CreateStoryRequest(String title, String idea) {
     }
 }

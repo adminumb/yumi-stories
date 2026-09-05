@@ -88,3 +88,32 @@ button:hover {
     margin: 0;
     color: #555;
 }
+
+.photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.photo-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.upload-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    flex-direction: row;
+}
+
+.upload-form button {
+    margin-top: 0;
+    padding: 6px 12px;
+    font-size: 13px;
+}

@@ -61,6 +61,61 @@ function renderStories(stories) {
 
         card.appendChild(title);
         card.appendChild(idea);
+
+        // Миниатюры уже загруженных фото
+        if (story.photoFilenames && story.photoFilenames.length > 0) {
+            const photosDiv = document.createElement('div');
+            photosDiv.className = 'photos';
+            story.photoFilenames.forEach(filename => {
+                const img = document.createElement('img');
+                img.src = `/photos/${filename}`;
+                img.alt = story.title;
+                img.className = 'photo-thumb';
+                photosDiv.appendChild(img);
+            });
+            card.appendChild(photosDiv);
+        }
+
+        // Форма загрузки нового фото для этой истории
+        const uploadForm = document.createElement('form');
+        uploadForm.className = 'upload-form';
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.required = true;
+
+        const uploadButton = document.createElement('button');
+        uploadButton.type = 'submit';
+        uploadButton.textContent = 'Загрузить фото';
+
+        uploadForm.appendChild(fileInput);
+        uploadForm.appendChild(uploadButton);
+
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!fileInput.files[0]) return;
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch(`/api/stories/${story.id}/photos`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Сервер ответил с ошибкой: ${response.status}`);
+                }
+
+                await loadStories();
+            } catch (error) {
+                alert(`Не удалось загрузить фото: ${error.message}`);
+            }
+        });
+
+        card.appendChild(uploadForm);
         storiesList.appendChild(card);
     });
 }
