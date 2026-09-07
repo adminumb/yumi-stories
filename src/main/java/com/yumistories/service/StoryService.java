@@ -35,6 +35,12 @@ public class StoryService {
         return storyRepository.findAll();
     }
 
+    public Story getStoryById(Long id) {
+        return storyRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Story not found: " + id));
+    }
+
+
     public Story createStory(String title, String idea) {
         Story story = new Story(title, idea);
         return storyRepository.save(story);

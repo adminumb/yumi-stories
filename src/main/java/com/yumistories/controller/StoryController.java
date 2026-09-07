@@ -32,6 +32,15 @@ public class StoryController {
         return storyService.getAllStories();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Story> getStory(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(storyService.getStoryById(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @PostMapping
     public Story createStory(@RequestBody CreateStoryRequest request) {
         return storyService.createStory(request.title(), request.idea());

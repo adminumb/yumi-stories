@@ -59,8 +59,14 @@ function renderStories(stories) {
         const idea = document.createElement('p');
         idea.textContent = story.idea;
 
+        const detailLink = document.createElement('a');
+        detailLink.href = `story.html?id=${story.id}`;
+        detailLink.className = 'detail-link';
+        detailLink.textContent = 'Открыть историю →';
+
         card.appendChild(title);
         card.appendChild(idea);
+        card.appendChild(detailLink);
 
         // Миниатюры уже загруженных фото
         if (story.photoFilenames && story.photoFilenames.length > 0) {
